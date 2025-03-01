@@ -14,14 +14,14 @@ A command-line tool for detecting **Cache Poisoned Denial of Service (CPDoS)** v
 Run this **one command** to fetch all necessary files directly from **raw.githubusercontent.com**, place them into `/usr/local/share/cccpdos`, and create the `cccpdos` launcher under `/usr/local/bin`:
 
 ```bash
-sudo mkdir -p /usr/local/share/cccpdos && \\
-sudo curl -sSL "https://raw.githubusercontent.com/CyberCompass/CPDoSCompass/main/cpdos_constants.py" -o /usr/local/share/cccpdos/cpdos_constants.py && \\
-sudo curl -sSL "https://raw.githubusercontent.com/CyberCompass/CPDoSCompass/main/cpdos_utils.py" -o /usr/local/share/cccpdos/cpdos_utils.py && \\
-sudo curl -sSL "https://raw.githubusercontent.com/CyberCompass/CPDoSCompass/main/cpdos_requests.py" -o /usr/local/share/cccpdos/cpdos_requests.py && \\
-sudo curl -sSL "https://raw.githubusercontent.com/CyberCompass/CPDoSCompass/main/cpdos_attacks.py" -o /usr/local/share/cccpdos/cpdos_attacks.py && \\
-sudo curl -sSL "https://raw.githubusercontent.com/CyberCompass/CPDoSCompass/main/main.py" -o /usr/local/share/cccpdos/main.py && \\
+sudo mkdir -p /usr/local/share/cccpdos && \
+sudo curl -sSL "https://raw.githubusercontent.com/CyberCompass/CPDoSCompass/main/cpdos_constants.py" -o /usr/local/share/cccpdos/cpdos_constants.py && \
+sudo curl -sSL "https://raw.githubusercontent.com/CyberCompass/CPDoSCompass/main/cpdos_utils.py" -o /usr/local/share/cccpdos/cpdos_utils.py && \
+sudo curl -sSL "https://raw.githubusercontent.com/CyberCompass/CPDoSCompass/main/cpdos_requests.py" -o /usr/local/share/cccpdos/cpdos_requests.py && \
+sudo curl -sSL "https://raw.githubusercontent.com/CyberCompass/CPDoSCompass/main/cpdos_attacks.py" -o /usr/local/share/cccpdos/cpdos_attacks.py && \
+sudo curl -sSL "https://raw.githubusercontent.com/CyberCompass/CPDoSCompass/main/main.py" -o /usr/local/share/cccpdos/main.py && \
 sudo bash -c 'echo "#!/usr/bin/env bash
-exec python3 /usr/local/share/cccpdos/main.py \\\"\\$@\\\"" > /usr/local/bin/cccpdos' && \\
+exec python3 /usr/local/share/cccpdos/main.py \"\$@\"" > /usr/local/bin/cccpdos' && \
 sudo chmod +x /usr/local/bin/cccpdos
 ```
 

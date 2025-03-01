@@ -15,9 +15,9 @@ def send_raw_http_request(target_url, headers=None, verbose=False, validate=Fals
     import urllib.parse  # local import to avoid cross-module issues
 
     parsed_url = urllib.parse.urlparse(target_url)
-    host = parsed_url.netloc
+    host = parsed_url.hostname
     path = parsed_url.path if parsed_url.path else "/"
-    port = 443 if target_url.lower().startswith("https") else 80
+    port = parsed_url.port if parsed_url.port else (443 if target_url.lower().startswith("https") else 80)
 
     sock = socket.create_connection((host, port))
     if port == 443:

@@ -18,7 +18,7 @@ async def main():
     parser = argparse.ArgumentParser(description="Compass CPDoS Attack Tool")
     parser.add_argument("-u", "--url", help="Target URL (single mode)")
     parser.add_argument("-f", "--file", help="File containing URLs (batch mode)")
-    parser.add_argument("-a", "--attack", help="Attack type (HHO, HMC, HMO, ALL)", required=True)
+    parser.add_argument("-a", "--attack", help="Attack type (HHO, HMC, HMO, ALL)", default="ALL")
     parser.add_argument("--verbose", action="store_true", help="Show all request details")
     parser.add_argument("--validate", action="store_true", help="Compare baseline vs. post-attack responses")
     parser.add_argument("--ext1", help="Path extension for baseline (also used by attack if ext2 not given)", default=None)

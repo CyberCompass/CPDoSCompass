@@ -175,14 +175,17 @@ async def process_urls(
     for url in urls:
         if attack_type == "ALL":
             for atype in CPDOS_ATTACKS:
-                await perform_cpdos_attack(
-                    url, atype,
-                    verbose=verbose,
-                    validate=validate,
-                    baseline_ext=ext1,
-                    attack_ext=ext2,
-                    output_dir=output_dir
-                )
+                try:
+                    await perform_cpdos_attack(
+                        url, atype,
+                        verbose=verbose,
+                        validate=validate,
+                        baseline_ext=ext1,
+                        attack_ext=ext2,
+                        output_dir=output_dir
+                    )
+                except Exception as e:
+                    print(f"[!] Error processing {url} with {atype}: {e}", file=sys.stderr)
         else:
             await perform_cpdos_attack(
                 url, attack_type,

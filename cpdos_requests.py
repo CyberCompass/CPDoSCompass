@@ -22,7 +22,16 @@ def send_raw_http_request(target_url, headers=None, verbose=False, validate=Fals
     sock = socket.create_connection((host, port))
     if port == 443:
         context = ssl.create_default_context()
-        sock = context.wrap_socket(sock, server_hostname=host)
+        try:
+            sock = context.wrap_socket(sock, server_hostname=host)
+        except ssl.SSLCertVerificationError as e:
+            if verbose:
+                print(f"[!] SSL certificate verification failed: {e}", file=sys.stderr)
+            return None, None, None, b"", "N/A"
+        except Exception as e:
+            if verbose:
+                print(f"[!] SSL wrapping failed: {e}", file=sys.stderr)
+            return None, None, None ,b"", "N/A"
 
     try:
         request_lines = [

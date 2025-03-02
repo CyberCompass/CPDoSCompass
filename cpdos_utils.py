@@ -56,20 +56,33 @@ def extract_urls(lines, single_per_domain=True):
     """
     Find valid http(s) URLs in each line.
     If single_per_domain=True, returns only one URL per domain.
+    If multiple URLs for a domain exist, the preference is:
+      - third occurrence if present,
+      - else second,
+      - else first.
     """
-    found = []
-    seen_domains = set()
+    domain_urls = {}
     for line in lines:
         match = re.search(r"https?://[^\s]+", line)
         if match:
             url = match.group()
             parsed = urllib.parse.urlparse(url)
             domain = parsed.netloc.lower()
-            if single_per_domain and domain in seen_domains:
-                continue
-            seen_domains.add(domain)
-            found.append(url)
-    return found
+            domain_urls.setdefault(domain, []).append(url)
+
+    if single_per_domain:
+        selected = []
+        for urls in domain_urls.values():
+            if len(urls) >= 3:
+                selected.append(urls[2])
+            elif len(urls) >= 2:
+                selected.append(urls[1])
+            else:
+                selected.append(urls[0])
+        return selected
+    else:
+        # Return all found URLs
+        return [url for urls in domain_urls.values() for url in urls]
 
 
 def generate_filename(url: str, suffix: str) -> str:

@@ -6,11 +6,11 @@ import sys
 
 from cpdos_constants import BROWSER_HEADERS, CACHE_BYPASS_HEADERS
 
-def send_raw_http_request(target_url, headers=None, verbose=False, validate=False):
+def send_raw_http_request(target_url, headers=None, verbose=False, validate=False, timeout=1):
     """
-    Sends a raw HTTP GET request. Returns:
+    Sends a raw HTTP GET request with a timeout (default: 1 seconds). Returns:
         (status_code, length_of_body, md5_hash_of_body, raw_response, x_cache_value)
-    We only do a single recv(4096), as in the original code.
+    NOTE: Only a single recv(4096) is performed, which may not get the complete response.
     """
     import urllib.parse  # local import to avoid cross-module issues
 
@@ -19,7 +19,7 @@ def send_raw_http_request(target_url, headers=None, verbose=False, validate=Fals
     path = parsed_url.path if parsed_url.path else "/"
     port = parsed_url.port if parsed_url.port else (443 if target_url.lower().startswith("https") else 80)
 
-    sock = socket.create_connection((host, port))
+    sock = socket.create_connection((host, port), timeout=timeout)
     if port == 443:
         context = ssl.create_default_context()
         try:
@@ -31,7 +31,7 @@ def send_raw_http_request(target_url, headers=None, verbose=False, validate=Fals
         except Exception as e:
             if verbose:
                 print(f"[!] SSL wrapping failed: {e}", file=sys.stderr)
-            return None, None, None ,b"", "N/A"
+            return None, None, None, b"", "N/A"
 
     try:
         request_lines = [
@@ -46,7 +46,7 @@ def send_raw_http_request(target_url, headers=None, verbose=False, validate=Fals
         raw_request = "\r\n".join(request_lines).encode("utf-8")
         sock.sendall(raw_request)
 
-        # NOTE: Original code only does one .recv(4096). This may be partial.
+        # NOTE: Only performing one .recv(4096). This may be partial.
         raw_response = sock.recv(4096)
         response_str = raw_response.decode("utf-8", errors="ignore")
 

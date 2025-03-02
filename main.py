@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 from cpdos_constants import CPDOS_ATTACKS
 from cpdos_utils import extract_urls
 from cpdos_attacks import process_urls
+import math
 
 async def main():
     """
@@ -59,27 +60,27 @@ async def main():
         print("[!] No valid URLs found. Provide -u or -f, or pipe URLs via STDIN.", file=sys.stderr)
         sys.exit(1)
 
-    # Use ThreadPoolExecutor for multithreading
-    with ThreadPoolExecutor(max_workers=args.threads) as executor:
-        loop = asyncio.get_event_loop()
-        tasks = [
-            loop.run_in_executor(
-                executor,
-                asyncio.create_task(
-                    process_urls(
-                        collected_urls[i::args.threads],
-                        attack_choice,
-                        args.verbose,
-                        args.validate,
-                        args.ext1,
-                        args.ext2,
-                        args.output_dir
-                    )
-                )
+
+    # Split the collected URLs into chunks for each thread
+    num_threads = args.threads if len(collected_urls) > args.threads else 1
+    chunk_size = math.ceil(len(collected_urls) / num_threads)
+    url_chunks = [collected_urls[i:i + chunk_size] for i in range(0, len(collected_urls), chunk_size)]
+
+    tasks = [
+        asyncio.create_task(
+            process_urls(
+                urls=chunk,
+                attack_type=attack_choice,
+                verbose=args.verbose,
+                validate=args.validate,
+                ext1=args.ext1,
+                ext2=args.ext2,
+                output_dir=args.output_dir
             )
-            for i in range(args.threads)
-        ]
-        await asyncio.gather(*tasks)
+        )
+        for chunk in url_chunks
+    ]
+    await asyncio.gather(*tasks)
 
 if __name__ == "__main__":
     asyncio.run(main())

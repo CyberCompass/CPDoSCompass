@@ -1,3 +1,4 @@
+import socket
 import sys
 import os
 
@@ -184,8 +185,15 @@ async def process_urls(
                         attack_ext=ext2,
                         output_dir=output_dir
                     )
+                except socket.gaierror as e:
+                    if verbose:
+                        print(f"[!] DNS resolution error for {url} with {atype}: {e}", file=sys.stderr)
                 except Exception as e:
-                    print(f"[!] Error processing {url} with {atype}: {e}", file=sys.stderr)
+                    if "timed out" in str(e).lower():
+                        if verbose:
+                            print(f"[!] Error processing {url} with {atype}: {e}", file=sys.stderr)
+                    else:
+                        print(f"[!] Error processing {url} with {atype}: {e}", file=sys.stderr)
         else:
             await perform_cpdos_attack(
                 url, attack_type,
